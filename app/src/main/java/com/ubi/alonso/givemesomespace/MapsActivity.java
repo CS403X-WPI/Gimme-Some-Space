@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -43,6 +44,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private LatLng libcoord = new LatLng(42.274308, -71.806350);
     private PendingIntent mPIntent;
     private Intent mIntent;
+
+    private Firebase myFirebaseRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+        Firebase.setAndroidContext(this);
+
+        myFirebaseRef = new Firebase("https://blazing-heat-9371.firebaseio.com/");
 
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
