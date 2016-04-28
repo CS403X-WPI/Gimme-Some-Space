@@ -1,6 +1,11 @@
 package com.ubi.alonso.givemesomespace;
 
 import android.app.IntentService;
+
+import com.ubi.alonso.givemesomespace.MapsActivity;
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
@@ -25,7 +30,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "com.ubi.alonso.givemesomespace.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "com.ubi.alonso.givemesomespace.extra.PARAM2";
-
+    private static MapsActivity mapsClass = new MapsActivity();
     public GeofenceTransitionsIntentService() {
         super("GeofenceTransitionsIntentService");
     }
@@ -62,6 +67,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        System.out.println("In intent for Geofence");
+        System.out.println("In intent for Geofence");
+        System.out.println("In intent for Geofence");
+        System.out.println("In intent for Geofence");
+        System.out.println("In intent for Geofence");
+
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             System.out.println("Failed");
@@ -87,7 +98,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             System.out.println("IN GEOFENCE");
             System.out.println("IN GEOFENCE");
             System.out.println("IN GEOFENCE");
-
+            showNotification();
+            //    mapsClass.showDialog();
             // Get the transition details as a String.
 //            String geofenceTransitionDetails = getGeofenceTransitionDetails(
 //                    this,
@@ -121,5 +133,24 @@ public class GeofenceTransitionsIntentService extends IntentService {
     private void handleActionBaz(String param1, String param2) {
         // TODO: Handle action Baz
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void showNotification(){
+
+        //Intent notificationIntent = new Intent(getBaseContext(), NotificationReceiver.class);
+        //PendingIntent pIntent = PendingIntent.getActivity(EpworthIntroActivity.this, 0, notificationIntent, 0);
+
+        Notification mNotification = new Notification.Builder(this)
+                .setContentTitle("Give Me Some Space")
+                .setContentText("You entered the library. How full is it?")
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                //.setContentIntent(pIntent)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, mNotification);
+
+
     }
 }

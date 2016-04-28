@@ -1,15 +1,21 @@
 package com.ubi.alonso.givemesomespace;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
@@ -18,6 +24,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,13 +33,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.GeofencingRequest;
+import com.wefika.horizontalpicker.HorizontalPicker;
+
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
+public class MapsActivity extends FragmentActivity implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>,HorizontalPicker.OnItemSelected{
 
     private GoogleMap mMap;
     private LatLng latLng;
@@ -41,9 +50,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public static final String TAG = MapsActivity.class.getSimpleName();
     ArrayList<Geofence> geofences = new ArrayList<Geofence>();
     private Geofence libfence;
-    private LatLng libcoord = new LatLng(42.274308, -71.806350);
+    private LatLng libcoord = new LatLng(42.274232, -71.806297);
     private PendingIntent mPIntent;
     private Intent mIntent;
+    private int rating = -1;
 
     private Firebase myFirebaseRef;
 
@@ -88,7 +98,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         mApiClient.connect();
 
     }
-
+    @Override
+    public void onItemSelected(int index)    {
+        rating = 1+ index;
+        Toast.makeText(this, "Rating: " + rating, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -128,14 +142,22 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .setRequestId("Library")
 
                 .setCircularRegion(
-                        latLng.latitude,
-                        latLng.longitude,
+                        libcoord.latitude,
+                        libcoord.longitude,
                         60)
                 .setExpirationDuration(3600000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setLoiteringDelay(1000)
+                .setLoiteringDelay(100)
                 .build());
+
+        CircleOptions circleOptions = new CircleOptions();
+        circleOptions.center(libcoord)
+                .fillColor(Color.argb(64, 0, 255, 0))
+                .strokeColor(Color.GREEN)
+                .strokeWidth(1)
+                .radius(40);
+        mMap.addCircle(circleOptions);
 
         LocationServices.GeofencingApi.addGeofences(
                 mApiClient,
@@ -188,7 +210,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
         builder.addGeofences(geofences);
         return builder.build();
     }
@@ -207,6 +229,40 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onResult(@NonNull Status status) {
+
+    }
+
+    public void showDialog(){
+        final Dialog d = new Dialog(MapsActivity.this);
+        d.setContentView(R.layout.dialog);
+        d.setTitle ("How full is the library?");
+        Button firstbutton = (Button) d.findViewById(R.id.button1);
+        Button secondbutton = (Button) d.findViewById(R.id.button2);
+        HorizontalPicker np = (HorizontalPicker) d.findViewById(R.id.numberPicker1);
+        np.setOnItemSelectedListener(this);
+        firstbutton.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick (View v){
+                d.dismiss();
+                //james push your code please
+                //to the server here
+            }
+        });
+
+        secondbutton.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick (View v){
+                d.dismiss();
+            }
+        });
+
+        d.show();
+
+
+
+
 
     }
 }
