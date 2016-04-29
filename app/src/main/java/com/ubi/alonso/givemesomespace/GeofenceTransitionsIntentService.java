@@ -1,13 +1,11 @@
 package com.ubi.alonso.givemesomespace;
 
 import android.app.IntentService;
-
-import com.ubi.alonso.givemesomespace.MapsActivity;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -26,11 +24,11 @@ public class GeofenceTransitionsIntentService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_FOO = "com.ubi.alonso.givemesomespace.action.FOO";
     private static final String ACTION_BAZ = "com.ubi.alonso.givemesomespace.action.BAZ";
-
+    static boolean inGeofence = false;
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "com.ubi.alonso.givemesomespace.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "com.ubi.alonso.givemesomespace.extra.PARAM2";
-    private static MapsActivity mapsClass = new MapsActivity();
+    private static MapsActivity mapsClass;
     public GeofenceTransitionsIntentService() {
         super("GeofenceTransitionsIntentService");
     }
@@ -83,8 +81,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
         // Test that the reported transition was of interest.
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
 
             // Get the geofences that were triggered. A single event can trigger
             // multiple geofences.
@@ -98,6 +95,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             System.out.println("IN GEOFENCE");
             System.out.println("IN GEOFENCE");
             System.out.println("IN GEOFENCE");
+            inGeofence = true;
+            Intent dialogIntent = new Intent("myBroadcastIntent");
             showNotification();
             //    mapsClass.showDialog();
             // Get the transition details as a String.
@@ -107,8 +106,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
 //                    triggeringGeofences
 //            );
 
-//            // Send notification and log the transition details.
-//            sendNotification(geofenceTransitionDetails);
+              LocalBroadcastManager.getInstance(this).sendBroadcast(dialogIntent);
+
 //            Log.i(TAG, geofenceTransitionDetails);
         } else {
 //            // Log the error.
@@ -153,4 +152,6 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
 
     }
+
+
 }

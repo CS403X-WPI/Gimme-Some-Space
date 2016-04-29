@@ -9,15 +9,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="How full is the library on a scale of 0 to 5?"
+        android:text="How full is the library                                     on a scale of 1 to 5?"
         android:id="@+id/title_dialog"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:background="@color/Barry"
+        android:background="@color/colorPrimary"
         android:textColor="#ffffff"
         android:paddingLeft="5dp"
-        android:paddingRight="5dp" />
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        android:textAlignment="center" />
 
 
 
@@ -26,37 +29,57 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="44sp"
+        android:textColor="@color/colorText"
         android:paddingTop="100dp"
-        android:paddingBottom="60dp"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="2"
         android:focusable="true"
         android:focusableInTouchMode="true"
         app:values="@array/values"
         app:sideItems="@integer/numSideItems"
-        app:dividerSize="10dp"/>
+        app:dividerSize="10dp"
+        android:nestedScrollingEnabled="true"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Practically Empty"
+
+        android:id="@+id/descr"
+        android:layout_alignBottom="@+id/numberPicker1"
+        android:gravity="center_horizontal" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_alignParentBottom="false"
-        android:layout_alignBottom="@+id/numberPicker1">
+        android:layout_alignBaseline="@+id/descr"
+        android:layout_alignBottom="@+id/descr"
+        android:paddingTop="20dp">
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:layout_weight="5" />
+            android:layout_weight="5"
+            android:textColor="#ffffff"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp" />
 
         <Button
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Set"
+            android:text="OK"
             android:layout_weight="5"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textColor="#ffffff"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp" />
     </LinearLayout>
 
 

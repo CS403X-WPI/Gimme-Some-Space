@@ -3,18 +3,24 @@ package com.ubi.alonso.givemesomespace;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -54,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private PendingIntent mPIntent;
     private Intent mIntent;
     private int rating = -1;
-
+    private TextView tv;
     private Firebase myFirebaseRef;
 
     @Override
@@ -93,15 +99,50 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
 
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String someValue = intent.getStringExtra("someName");
+                showDialog();
+            }
+        };
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter("myBroadcastIntent"));
 
 
         mApiClient.connect();
 
     }
+
+
+
+
+
     @Override
     public void onItemSelected(int index)    {
         rating = 1+ index;
         Toast.makeText(this, "Rating: " + rating, Toast.LENGTH_SHORT).show();
+
+
+        switch(index){
+            case 0:
+                tv.setText("Practically Empty");
+                break;
+
+            case 1:
+                tv.setText("Very Few People");
+                break;
+            case 2:
+                tv.setText("Moderate Amount of People");
+                break;
+
+            case 3:
+                tv.setText("Large Amount of People");
+                break;
+            case 4:
+                tv.setText("Completely Full");
+                break;
+        }
     }
 
     @Override
@@ -148,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .setExpirationDuration(3600000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setLoiteringDelay(100)
+                .setLoiteringDelay(6000)
                 .build());
 
         CircleOptions circleOptions = new CircleOptions();
@@ -164,6 +205,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 getGeofencingRequest(),
                 getGeofencePendingIntent()
         ).setResultCallback(this);
+
     }
 
     @Override
@@ -179,6 +221,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     @Override
     protected void onResume() {
         super.onResume();
+
+
+
+        System.out.println("In Resume");
+        System.out.println("In Resume");
+        System.out.println("In Resume");
+        System.out.println("In Resume");
+
+
         //LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, new IntentFilter(STRING_ACTION));
     }
 
@@ -237,7 +288,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         d.setContentView(R.layout.dialog);
         d.setTitle ("How full is the library?");
         Button firstbutton = (Button) d.findViewById(R.id.button1);
+        firstbutton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.MULTIPLY);
+       tv = (TextView) d.findViewById(R.id.descr);
         Button secondbutton = (Button) d.findViewById(R.id.button2);
+        secondbutton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.MULTIPLY);
+
         HorizontalPicker np = (HorizontalPicker) d.findViewById(R.id.numberPicker1);
         np.setOnItemSelectedListener(this);
         firstbutton.setOnClickListener(new OnClickListener()
@@ -254,6 +309,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         {
             @Override
             public void onClick (View v){
+
                 d.dismiss();
             }
         });

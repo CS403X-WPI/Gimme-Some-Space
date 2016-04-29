@@ -3,6 +3,7 @@
     <color name="colorPrimary">#cf0101</color>
     <color name="colorPrimaryDark">#cb0101</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="Barry">#cf0101</color>
+    <color name ="colorText">#8a2121</color>
+    <color name="Barry">#e8a0a0</color>
 
 </resources>
