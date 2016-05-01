@@ -22,8 +22,10 @@ public class DBHandler {
     private static int ccAvg;
     private static int libAvg;
     private Firebase fb;
-    public DBHandler(Firebase firebase) {
+    private studySpaceListActivity activity;
+    public DBHandler(Firebase firebase, studySpaceListActivity ssla) {
         this.fb = firebase;
+        this.activity = ssla;
     }
 
     Integer finalAVG = 0;
@@ -50,6 +52,7 @@ public class DBHandler {
     }
 
     public StudySpace retrieveData () {
+
 
         final List<BuildingData> dataList = new ArrayList<BuildingData>();
         this.fb.child("inputs").addValueEventListener(new ValueEventListener() {
@@ -84,14 +87,14 @@ public class DBHandler {
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
                             libAvg = computeAverageRate(dataList);
                             Log.d("MESSAGE", "average is :"+ libAvg);
-                            finalAVG = libAvg;
+                            activity.setData(libAvg);
 
                             break;
                         } else {
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
                             libAvg = computeAverageRate(dataList);
                             Log.d("MESSAGE", "average is :"+ libAvg);
-                            finalAVG = libAvg;
+                            activity.setData(libAvg);
                             break;
                         }
                     } catch (Exception e) {
@@ -105,8 +108,8 @@ public class DBHandler {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-        Log.d("MESSAGE", "LIBAVG AT OUTPUT: "+libAvg);
-        return new StudySpace("Library",libAvg);
+        Log.d("MESSAGE", "LIBAVG AT OUTPUT: "+finalAVG);
+        return new StudySpace("Library",finalAVG);
     }
 
     public int computeAverageRate (List<BuildingData> dataList) {
@@ -120,4 +123,5 @@ public class DBHandler {
         avg = (int) (sum/count);
         return avg;
     }
+
 }

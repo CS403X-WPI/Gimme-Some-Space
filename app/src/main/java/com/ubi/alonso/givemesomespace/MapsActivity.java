@@ -74,12 +74,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .findFragmentById(R.id.map);
 
         Firebase.setAndroidContext(this);
-        myFirebaseRef = new Firebase("https://blazing-heat-9371.firebaseio.com/");
-        dbhandler = new DBHandler(myFirebaseRef);
-//        dbhandler.sendData(new BuildingData(1232141435,"Library", 3));
-//        dbhandler.sendData(new BuildingData(1232141435,"Library", 2));
-//        dbhandler.sendData(new BuildingData(1232141435,"Library", 5));
-//        dbhandler.sendData(new BuildingData(1232141435,"Library", 1));
+
+
 
 
         mApiClient = new GoogleApiClient.Builder(this)

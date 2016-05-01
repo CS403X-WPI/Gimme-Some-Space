@@ -10,7 +10,7 @@ public class BuildingData {
 
     public BuildingData (long time, String name, long rate) {
         this.buildingName = name;
-        this.rating = rate+1;
+        this.rating = rate;
         this.timeStamp = Long.toString(time);
     }
 

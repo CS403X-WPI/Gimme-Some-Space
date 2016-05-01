@@ -11,20 +11,29 @@ import java.util.ArrayList;
 
 public class studySpaceListActivity extends AppCompatActivity {
     private Firebase myFirebaseRef;
+    private StudySpaceAdapter adapter;
 
     String[] arr = {"a","b","c"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_space_list);
-        ArrayList<StudySpace> ssArr = new ArrayList<StudySpace>();
+
         myFirebaseRef = new Firebase("https://blazing-heat-9371.firebaseio.com/");
-        DBHandler dbh = new DBHandler(myFirebaseRef);
-        ssArr.add(dbh.retrieveData());
+        DBHandler dbh = new DBHandler(myFirebaseRef,this);
+        dbh.retrieveData();
 
 
 
-        StudySpaceAdapter adapter = new StudySpaceAdapter(this,ssArr);
+
+
+    }
+
+    public void setData(int data) {
+        ArrayList<StudySpace> ssArr = new ArrayList<StudySpace>();
+        ssArr.add(new StudySpace("Library", data));
+        adapter = new StudySpaceAdapter(this,ssArr);
+
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
