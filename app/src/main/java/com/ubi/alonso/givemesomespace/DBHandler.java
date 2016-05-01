@@ -26,6 +26,8 @@ public class DBHandler {
         this.fb = firebase;
     }
 
+    Integer finalAVG = 0;
+
     public void sendData(BuildingData data) {
         try {
 
@@ -48,6 +50,7 @@ public class DBHandler {
     }
 
     public StudySpace retrieveData () {
+
         final List<BuildingData> dataList = new ArrayList<BuildingData>();
         this.fb.child("inputs").addValueEventListener(new ValueEventListener() {
             @Override
@@ -81,11 +84,14 @@ public class DBHandler {
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
                             libAvg = computeAverageRate(dataList);
                             Log.d("MESSAGE", "average is :"+ libAvg);
+                            finalAVG = libAvg;
+
                             break;
                         } else {
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
                             libAvg = computeAverageRate(dataList);
                             Log.d("MESSAGE", "average is :"+ libAvg);
+                            finalAVG = libAvg;
                             break;
                         }
                     } catch (Exception e) {
