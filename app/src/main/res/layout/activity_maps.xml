@@ -27,7 +27,6 @@
         android:textSize="24dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="findStudySpace"/>
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
+
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>,HorizontalPicker.OnItemSelected{
@@ -80,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 //        dbhandler.sendData(new BuildingData(1232141435,"Library", 5));
 //        dbhandler.sendData(new BuildingData(1232141435,"Library", 1));
 
-        dbhandler.retrieveData();
+
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
                 .addApi(LocationServices.API)
@@ -117,6 +118,21 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
         mApiClient.connect();
+        Button button;
+
+        button=(Button)findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, studySpaceListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
 
     }
 
@@ -331,6 +347,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         d.show();
     }
+
+
 
     /**
      * Method that handles creating a listView for the available goefences

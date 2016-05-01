@@ -47,7 +47,7 @@ public class DBHandler {
 
     }
 
-    public void retrieveData () {
+    public StudySpace retrieveData () {
         final List<BuildingData> dataList = new ArrayList<BuildingData>();
         this.fb.child("inputs").addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,8 +99,8 @@ public class DBHandler {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-        Log.d("MESSAGE", "LIST IS "+dataList.toString());
-        Log.d("MESSAGE", "average is :"+this.computeAverageRate(dataList));
+        Log.d("MESSAGE", "LIBAVG AT OUTPUT: "+libAvg);
+        return new StudySpace("Library",libAvg);
     }
 
     public int computeAverageRate (List<BuildingData> dataList) {

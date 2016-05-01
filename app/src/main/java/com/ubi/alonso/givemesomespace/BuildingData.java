@@ -8,7 +8,7 @@ public class BuildingData {
     private String buildingName;
     private long rating;
 
-    BuildingData (long time, String name, long rate) {
+    public BuildingData (long time, String name, long rate) {
         this.buildingName = name;
         this.rating = rate+1;
         this.timeStamp = Long.toString(time);

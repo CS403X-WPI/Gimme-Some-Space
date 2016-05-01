@@ -34,7 +34,7 @@ class StudySpaceAdapter extends ArrayAdapter<StudySpace> {
         TextView tvRating = (TextView) convertView.findViewById(R.id.item_space_name_rating);
 
         tvName.setText(studySpace.name);
-        tvRating.setText(studySpace.rating);
+        tvRating.setText(String.valueOf(studySpace.rating));
 
         return convertView;
     }
