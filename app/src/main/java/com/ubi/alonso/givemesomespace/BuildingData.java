@@ -1,4 +1,4 @@
-package com.example.jameschow.webdbapp;
+package com.ubi.alonso.givemesomespace;
 
 /**
  * Created by jameschow on 4/20/16.
@@ -6,12 +6,12 @@ package com.example.jameschow.webdbapp;
 public class BuildingData {
     private String timeStamp;
     private String buildingName;
-    private int rating;
+    private long rating;
 
-    BuildingData (String time, String name, int rate) {
+    BuildingData (long time, String name, long rate) {
         this.buildingName = name;
-        this.rating = rate;
-        this.timeStamp = time;
+        this.rating = rate+1;
+        this.timeStamp = Long.toString(time);
     }
 
     public String getTimeStamp() {
@@ -30,7 +30,7 @@ public class BuildingData {
         this.buildingName = buildingName;
     }
 
-    public int getRating() {
+    public long getRating() {
         return rating;
     }
 

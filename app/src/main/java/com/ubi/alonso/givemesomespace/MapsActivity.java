@@ -62,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private int rating = -1;
     private TextView tv;
     private Firebase myFirebaseRef;
+    private DBHandler dbhandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +73,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .findFragmentById(R.id.map);
 
         Firebase.setAndroidContext(this);
-
         myFirebaseRef = new Firebase("https://blazing-heat-9371.firebaseio.com/");
+        dbhandler = new DBHandler(myFirebaseRef);
+//        dbhandler.sendData(new BuildingData(1232141435,"Library", 3));
+//        dbhandler.sendData(new BuildingData(1232141435,"Library", 2));
+//        dbhandler.sendData(new BuildingData(1232141435,"Library", 5));
+//        dbhandler.sendData(new BuildingData(1232141435,"Library", 1));
 
+        dbhandler.retrieveData();
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
                 .addApi(LocationServices.API)
@@ -284,24 +290,33 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     public void showDialog(){
+        final String buildingName = "Library";
         final Dialog d = new Dialog(MapsActivity.this);
         d.setContentView(R.layout.dialog);
         d.setTitle ("How full is the library?");
         Button firstbutton = (Button) d.findViewById(R.id.button1);
         firstbutton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.MULTIPLY);
-       tv = (TextView) d.findViewById(R.id.descr);
+        tv = (TextView) d.findViewById(R.id.descr);
         Button secondbutton = (Button) d.findViewById(R.id.button2);
         secondbutton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.MULTIPLY);
 
-        HorizontalPicker np = (HorizontalPicker) d.findViewById(R.id.numberPicker1);
+        final HorizontalPicker np = (HorizontalPicker) d.findViewById(R.id.numberPicker1);
         np.setOnItemSelectedListener(this);
         firstbutton.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick (View v){
-                d.dismiss();
-                //james push your code please
+                long rate;
+                long timestamp;
+                BuildingData data;
+                timestamp = System.currentTimeMillis();
+                rate = np.getSelectedItem();
+                data = new BuildingData(timestamp,buildingName,rate);
+
+                //pushing new rating
                 //to the server here
+                dbhandler.sendData(data);
+
             }
         });
 
@@ -315,10 +330,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         });
 
         d.show();
+    }
 
-
-
-
+    /**
+     * Method that handles creating a listView for the available goefences
+     * @param v, given button
+     */
+    public void findStudySpace (View v) {
 
     }
+
 }
