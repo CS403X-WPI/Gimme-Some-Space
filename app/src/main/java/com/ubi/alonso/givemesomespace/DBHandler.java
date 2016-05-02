@@ -52,8 +52,6 @@ public class DBHandler {
     }
 
     public StudySpace retrieveData () {
-
-
         final List<BuildingData> dataList = new ArrayList<BuildingData>();
         this.fb.child("inputs").addValueEventListener(new ValueEventListener() {
             @Override
@@ -85,14 +83,18 @@ public class DBHandler {
                             Log.d("MESSAGE", "The name is :"+name+" with rating "+rating+" at time "+time + " counter "+counter);
                             dataList.add(new BuildingData(time,name,rating));
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
-                            libAvg = computeAverageRate(dataList);
+
+                            //multiple methods for the different buildings
+                            libAvg = computeAverageRate(dataList, 0);
+                            ccAvg = computeAverageRate(dataList, 1);
                             Log.d("MESSAGE", "average is :"+ libAvg);
                             activity.setData(libAvg);
 
                             break;
                         } else {
                             Log.d("MESSAGE", "LIST IS "+dataList.toString());
-                            libAvg = computeAverageRate(dataList);
+                            libAvg = computeAverageRate(dataList,0);
+                            ccAvg = computeAverageRate(dataList, 1);
                             Log.d("MESSAGE", "average is :"+ libAvg);
                             activity.setData(libAvg);
                             break;
@@ -112,13 +114,28 @@ public class DBHandler {
         return new StudySpace("Library",finalAVG);
     }
 
-    public int computeAverageRate (List<BuildingData> dataList) {
+    public int computeAverageRate (List<BuildingData> dataList, int choice) {
         double sum = 0.0;
         int avg;
         int count = 0;
+        String building = "";
+        switch (choice) {
+            case 0:
+                building = "Library";
+                break;
+            case 1:
+                building = "Campus";
+                break;
+            default:
+                Log.d("MESSAGE", "Unknown choice");
+                break;
+        }
+
         for (BuildingData d : dataList) {
-            sum += (double) (d.getRating());
-            count++;
+            if (d.getBuildingName().contains(building)) {
+                sum += (double) (d.getRating());
+                count++;
+            }
         }
         avg = (int) (sum/count);
         return avg;
