@@ -34,7 +34,7 @@ public class RegisteredBuilding {
         ArrayList<RegisteredBuilding> ar = new ArrayList<>();
         ar.add(0, new RegisteredBuilding(new LatLng(42.27468,-71.80839),"Campus Center"));
         ar.add(1, new RegisteredBuilding(new LatLng(42.274232,-71.806297),"Library"));
-
+        ar.add(1,new RegisteredBuilding( new LatLng(42.273932,-71.807649),"Stratton Hall"));
 
 
         return ar;

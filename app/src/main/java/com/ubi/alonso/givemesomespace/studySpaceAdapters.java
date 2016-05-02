@@ -48,12 +48,12 @@ class StudySpaceAdapter extends ArrayAdapter<StudySpace> {
             long diff = studySpace.lastPing.getTime() - now.getTime();
 
         long diffMinutes = diff / (60 * 1000) % 60;
-        ;
+
         tvLastPing.setText("Last Report Submitted "+diffMinutes+" minutes ago.");
         }
         else
         {
-            tvLastPing.setText("No Repots Submitted for this Space");
+            tvLastPing.setText("No Reports Submitted for this Space");
         }
 
         return convertView;

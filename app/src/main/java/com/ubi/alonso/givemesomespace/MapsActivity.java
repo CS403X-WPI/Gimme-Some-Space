@@ -183,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Location mLastLocation = null;
+        Location mLastLocation;
         //Intent intent = new Intent(this, ActivityRecognizedService.class);
         //PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, 100, pendingIntent);
@@ -215,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 markerOptions.title(building.name);
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mMap.addMarker(markerOptions);
-            };
+            }
 
         }
         //zoom to current position:
@@ -237,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     .setCircularRegion(
                             buildings.get(i).location.latitude,
                             buildings.get(i).location.longitude,
-                            60)
+                            40)
                     .setExpirationDuration(3600000)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
                             Geofence.GEOFENCE_TRANSITION_EXIT)
@@ -251,7 +251,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .fillColor(Color.argb(64, 0, 255, 0))
                 .strokeColor(Color.GREEN)
                 .strokeWidth(1)
-                .radius(40);
+                .radius(30);
         mMap.addCircle(circleOptions);
 
         LocationServices.GeofencingApi.addGeofences(
