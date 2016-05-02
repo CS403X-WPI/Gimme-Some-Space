@@ -8,15 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,6 +49,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>,HorizontalPicker.OnItemSelected{
@@ -57,7 +62,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public static final String TAG = MapsActivity.class.getSimpleName();
     ArrayList<Geofence> geofences = new ArrayList<Geofence>();
     private Geofence libfence;
-    private LatLng libcoord = new LatLng(42.274232, -71.806297);
+
+
+    public String CurrentBuildingName = "Study Space";
     private PendingIntent mPIntent;
     private Intent mIntent;
     private int rating = -1;
@@ -68,6 +75,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Firebase.setAndroidContext(this);
+        myFirebaseRef = new Firebase("https://blazing-heat-9371.firebaseio.com/");
+        dbhandler = new DBHandler(myFirebaseRef,null);
+
+        Resources res = getResources();
+
+
+
+
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -105,7 +122,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String someValue = intent.getStringExtra("someName");
+                Log.d("MESSAGE","Recieved Intent from Child Activity");
+                CurrentBuildingName = intent.getStringExtra("CurrentBuildingName");
                 showDialog();
             }
         };
@@ -187,6 +205,18 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             markerOptions.title("Current Position");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
             currLocationMarker = mMap.addMarker(markerOptions);
+
+            ArrayList<RegisteredBuilding> buildings = RegisteredBuilding.getallBuildings();
+            for (RegisteredBuilding building: buildings) {
+
+                Log.d("MESSAGE","CONSTRUCTING BUILDING MARKER FOR "+building.name);
+                markerOptions = new MarkerOptions();
+                markerOptions.position(building.location);
+                markerOptions.title(building.name);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mMap.addMarker(markerOptions);
+            };
+
         }
         //zoom to current position:
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -195,23 +225,29 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         mMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
-        geofences.add(new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId("Library")
+        ArrayList<RegisteredBuilding> buildings = RegisteredBuilding.getallBuildings();
+        for (int i = 0; i < buildings.toArray().length; i++)
+        {
 
-                .setCircularRegion(
-                        libcoord.latitude,
-                        libcoord.longitude,
-                        60)
-                .setExpirationDuration(3600000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setLoiteringDelay(6000)
-                .build());
+            geofences.add(new Geofence.Builder()
+                    // Set the request ID of the geofence. This is a string to identify this
+                    // geofence.
+                    .setRequestId(buildings.get(i).name)
+
+                    .setCircularRegion(
+                            buildings.get(i).location.latitude,
+                            buildings.get(i).location.longitude,
+                            60)
+                    .setExpirationDuration(3600000)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
+                            Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .setLoiteringDelay(6000)
+                    .build());
+
+
 
         CircleOptions circleOptions = new CircleOptions();
-        circleOptions.center(libcoord)
+        circleOptions.center(buildings.get(i).location)
                 .fillColor(Color.argb(64, 0, 255, 0))
                 .strokeColor(Color.GREEN)
                 .strokeWidth(1)
@@ -223,6 +259,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 getGeofencingRequest(),
                 getGeofencePendingIntent()
         ).setResultCallback(this);
+
+    }
 
     }
 
@@ -239,21 +277,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     @Override
     protected void onResume() {
         super.onResume();
-
-
-
-        System.out.println("In Resume");
-        System.out.println("In Resume");
-        System.out.println("In Resume");
-        System.out.println("In Resume");
-
-
-        //LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, new IntentFilter(STRING_ACTION));
     }
 
     @Override
     protected void onPause() {
-        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         super.onPause();
     }
 
@@ -268,7 +295,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             markerOptions.title("Current Position");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
             currLocationMarker = mMap.addMarker(markerOptions);
+
+
         }
+
+
+
         //zoom to current position:
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng).zoom(14).build();
@@ -302,10 +334,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     public void showDialog(){
-        final String buildingName = "Library";
+
         final Dialog d = new Dialog(MapsActivity.this);
         d.setContentView(R.layout.dialog);
-        d.setTitle ("How full is the library?");
+        d.setTitle ("How full is the "+CurrentBuildingName+"?");
+        TextView titletv = (TextView) d.findViewById(R.id.title_dialog);
+        titletv.setText("How full is the "+CurrentBuildingName+"\non a scale of 1 to 5?");
         Button firstbutton = (Button) d.findViewById(R.id.button1);
         firstbutton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.MULTIPLY);
         tv = (TextView) d.findViewById(R.id.descr);
@@ -323,11 +357,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 BuildingData data;
                 timestamp = System.currentTimeMillis();
                 rate = np.getSelectedItem();
-                data = new BuildingData(timestamp,buildingName,rate);
+                data = new BuildingData(timestamp,CurrentBuildingName,rate);
 
                 //pushing new rating
                 //to the server here
                 dbhandler.sendData(data);
+                d.dismiss();
 
             }
         });
@@ -345,7 +380,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
 
-
     /**
      * Method that handles creating a listView for the available goefences
      * @param v, given button
@@ -353,5 +387,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public void findStudySpace (View v) {
 
     }
+
+ private BroadcastReceiver rcvr = new BroadcastReceiver() {
+     @Override
+     public void onReceive(Context context, Intent intent) {
+         Log.d("MESSAGE","Got Building Name");
+         Bundle bundle = intent.getExtras();
+         if (bundle != null)
+         {
+             CurrentBuildingName = bundle.getString("CurrentBuildingName");
+         }
+     }
+ };
 
 }

@@ -1,5 +1,6 @@
 package com.ubi.alonso.givemesomespace;
 
+import android.text.format.Time;
 import android.util.Log;
 
 /**
@@ -9,7 +10,7 @@ public class StudySpace {
     public String name;
     public Integer rating;
 
-    public StudySpace(String name, int rating)
+    public StudySpace(String name, int rating,Time lastping)
     {
         Log.d("MESSAGE","Created Study space "+name+" With Rating: "+rating);
         this.name = name;
