@@ -356,7 +356,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 long timestamp;
                 BuildingData data;
                 timestamp = System.currentTimeMillis();
-                rate = np.getSelectedItem();
+                rate = np.getSelectedItem()+1;
                 data = new BuildingData(timestamp,CurrentBuildingName,rate);
 
                 //pushing new rating

@@ -1,0 +1,72 @@
+Index: app/src/main/java/com/ubi/alonso/givemesomespace/StudySpace.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/ubi/alonso/givemesomespace/StudySpace.java	(revision a2fa4d3c4c39306a1394bb931d5814484af19d27)
++++ app/src/main/java/com/ubi/alonso/givemesomespace/StudySpace.java	(revision )
+@@ -3,17 +3,21 @@
+ import android.text.format.Time;
+ import android.util.Log;
+ 
++import java.util.Date;
++
+ /**
+  * Created by ben on 4/30/16.
+  */
+ public class StudySpace {
+     public String name;
+     public Integer rating;
++    public Date lastPing;
+ 
+-    public StudySpace(String name, int rating,Time lastping)
++    public StudySpace(String name, int rating,Date lastping)
+     {
+         Log.d("MESSAGE","Created Study space "+name+" With Rating: "+rating);
+         this.name = name;
+         this.rating = rating;
++        this.lastPing = lastping;
+     }
+ }
+Index: app/src/main/java/com/ubi/alonso/givemesomespace/DBHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/ubi/alonso/givemesomespace/DBHandler.java	(revision a2fa4d3c4c39306a1394bb931d5814484af19d27)
++++ app/src/main/java/com/ubi/alonso/givemesomespace/DBHandler.java	(revision )
+@@ -11,6 +11,7 @@
+ import com.firebase.client.ValueEventListener;
+ 
+ import java.util.ArrayList;
++import java.util.Calendar;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -109,7 +110,10 @@
+             }
+         });
+         Log.d("MESSAGE", "LIBAVG AT OUTPUT: "+finalAVG);
+-        return new StudySpace("Library",finalAVG);
++
++        Calendar c = Calendar.getInstance();
++
++        return new StudySpace("Library",finalAVG,c.getTime());
+     }
+ 
+     public int computeAverageRate (List<BuildingData> dataList) {
+Index: app/src/main/java/com/ubi/alonso/givemesomespace/studySpaceListActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/ubi/alonso/givemesomespace/studySpaceListActivity.java	(revision a2fa4d3c4c39306a1394bb931d5814484af19d27)
++++ app/src/main/java/com/ubi/alonso/givemesomespace/studySpaceListActivity.java	(revision )
+@@ -31,6 +31,7 @@
+ 
+     public void setData(int data) {
+         ArrayList<StudySpace> ssArr = new ArrayList<StudySpace>();
++
+         ssArr.add(new StudySpace("Library", data));
+         adapter = new StudySpaceAdapter(this,ssArr);
+ 

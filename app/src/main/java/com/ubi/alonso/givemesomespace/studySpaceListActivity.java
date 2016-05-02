@@ -2,6 +2,7 @@ package com.ubi.alonso.givemesomespace;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -29,9 +30,14 @@ public class studySpaceListActivity extends AppCompatActivity {
 
     }
 
-    public void setData(int data) {
+    public void setData(ArrayList<RegisteredBuilding> data) {
         ArrayList<StudySpace> ssArr = new ArrayList<StudySpace>();
-        ssArr.add(new StudySpace("Library", data));
+
+        for (RegisteredBuilding rb:data) {
+            Log.d("MESSAGE","LastHit: "+rb.lasthit);
+            ssArr.add(0,new StudySpace(rb.name,rb.computeRating(),rb.lasthit));
+
+        }
         adapter = new StudySpaceAdapter(this,ssArr);
 
         ListView listView = (ListView) findViewById(R.id.listView);

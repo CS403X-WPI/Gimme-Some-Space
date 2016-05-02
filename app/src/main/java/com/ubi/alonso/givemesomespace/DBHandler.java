@@ -10,7 +10,9 @@ import com.firebase.client.FirebaseError;
 
 import com.firebase.client.ValueEventListener;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ public class DBHandler {
     private static int libAvg;
     private Firebase fb;
     private studySpaceListActivity activity;
+
     public DBHandler(Firebase firebase, studySpaceListActivity ssla) {
         this.fb = firebase;
         this.activity = ssla;
@@ -33,7 +36,7 @@ public class DBHandler {
     public void sendData(BuildingData data) {
         try {
 
-            Firebase newref =  fb.child("inputs").push();
+            Firebase newref = fb.child("inputs").push();
 
             Firebase newData = newref.child("Building Name");
             Firebase childrenTime = newref.child("Time");
@@ -51,7 +54,7 @@ public class DBHandler {
 
     }
 
-    public StudySpace retrieveData () {
+    public StudySpace retrieveData() {
         final List<BuildingData> dataList = new ArrayList<BuildingData>();
         this.fb.child("inputs").addValueEventListener(new ValueEventListener() {
             @Override
@@ -63,40 +66,36 @@ public class DBHandler {
                 } else {
                     limit = 10;
                 }
-                Log.d("MESSAGE","There are " + snapshot.getChildrenCount() + " blog posts");
-                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                Log.d("MESSAGE", "There are " + snapshot.getChildrenCount() + " blog posts");
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     try {
 //                        BuildingData post = (BuildingData) postSnapshot.getValue(BuildingData.class);
 //                        dataList.add(post);
-                        if (counter < limit-1) {
+                        if (counter < limit - 1) {
                             String name = (String) postSnapshot.child("Building Name").getValue();
                             long rating = (long) postSnapshot.child("Rating").getValue();
-                            long time = Long.parseLong(((String)postSnapshot.child("Time").getValue()));
-                            Log.d("MESSAGE", "The name is :"+name+" with rating "+rating+" at time "+time + " counter "+counter);
-                            dataList.add(new BuildingData(time,name,rating));
+                            long time = Long.parseLong(((String) postSnapshot.child("Time").getValue()));
+                            Log.d("MESSAGE", "The name is :" + name + " with rating " + rating + " at time " + time + " counter " + counter);
+                            dataList.add(new BuildingData(time, name, rating));
                             counter++;
 
-                        } else if (counter == limit-1){
+                        } else if (counter == limit - 1) {
                             String name = (String) postSnapshot.child("Building Name").getValue();
                             long rating = (long) postSnapshot.child("Rating").getValue();
-                            long time = Long.parseLong(((String)postSnapshot.child("Time").getValue()));
-                            Log.d("MESSAGE", "The name is :"+name+" with rating "+rating+" at time "+time + " counter "+counter);
-                            dataList.add(new BuildingData(time,name,rating));
-                            Log.d("MESSAGE", "LIST IS "+dataList.toString());
+                            long time = Long.parseLong(((String) postSnapshot.child("Time").getValue()));
+                            Log.d("MESSAGE", "The name is :" + name + " with rating " + rating + " at time " + time + " counter " + counter);
+                            dataList.add(new BuildingData(time, name, rating));
+                            Log.d("MESSAGE", "LIST IS " + dataList.toString());
 
                             //multiple methods for the different buildings
-                            libAvg = computeAverageRate(dataList, 0);
-                            ccAvg = computeAverageRate(dataList, 1);
-                            Log.d("MESSAGE", "average is :"+ libAvg);
-                            activity.setData(libAvg);
+                            activity.setData(computeAverageRate(dataList));
 
                             break;
                         } else {
-                            Log.d("MESSAGE", "LIST IS "+dataList.toString());
-                            libAvg = computeAverageRate(dataList,0);
-                            ccAvg = computeAverageRate(dataList, 1);
-                            Log.d("MESSAGE", "average is :"+ libAvg);
-                            activity.setData(libAvg);
+                            String name = (String) postSnapshot.child("Building Name").getValue();
+                            Log.d("MESSAGE", "LIST IS " + dataList.toString());
+
+                            activity.setData(computeAverageRate(dataList));
                             break;
                         }
                     } catch (Exception e) {
@@ -105,40 +104,41 @@ public class DBHandler {
                     }
                 }
             }
+
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-        Log.d("MESSAGE", "LIBAVG AT OUTPUT: "+finalAVG);
-        return new StudySpace("Library",finalAVG);
+        Log.d("MESSAGE", "LIBAVG AT OUTPUT: " + finalAVG);
+
+        Calendar c = Calendar.getInstance();
+
+        return new StudySpace("Library", finalAVG, c.getTime());
     }
 
-    public int computeAverageRate (List<BuildingData> dataList, int choice) {
-        double sum = 0.0;
-        int avg;
-        int count = 0;
-        String building = "";
-        switch (choice) {
-            case 0:
-                building = "Library";
-                break;
-            case 1:
-                building = "Campus";
-                break;
-            default:
-                Log.d("MESSAGE", "Unknown choice");
-                break;
-        }
 
-        for (BuildingData d : dataList) {
-            if (d.getBuildingName().contains(building)) {
-                sum += (double) (d.getRating());
-                count++;
+    public ArrayList<RegisteredBuilding> computeAverageRate(List<BuildingData> dataList) {
+
+        ArrayList<RegisteredBuilding> allBuildings = RegisteredBuilding.getallBuildings();
+
+
+        for (BuildingData data : dataList) {
+            for (RegisteredBuilding building : allBuildings) {
+                Log.d("MESSAGE","Rating for "+ data.getBuildingName()+" @"+data.getRating());
+                Log.d("MESSAGE","Comapring "+ data.getBuildingName()+" with "+data.getBuildingName());
+                if (building.name.equals(data.getBuildingName())) {
+                    Log.d("MESSAGE","Comapring Successful"+data.getBuildingName());
+                    building.rating += data.getRating();
+                    building.hitcount = building.hitcount + 1;
+
+                    building.lasthit = new Date(Long.parseLong(data.getTimeStamp()) * 1000);
+                }
             }
-        }
-        avg = (int) (sum/count);
-        return avg;
-    }
 
+        }
+        return allBuildings;
+    }
 }
+
+
